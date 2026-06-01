@@ -1,0 +1,48 @@
+/* táblázat keret */
+.border_1 {
+  border-spacing: $email-table-border-width;
+  background-color: $email-table-border-color;
+}
+/* termék név link szín */
+.text_link {
+  color: $email-product-name-font-color;
+}
+/* áruház címe, heading */
+h1.text_biggest {
+  color: $email-heading-font-color;
+  text-transform: $email-heading-text-transform;
+  font-weight: 700;
+}
+/* szekció fejléc */
+.bg_color_dark1 {
+  padding: 10px;
+  background-color: rgba($email-section-heading-bg-color, $email-section-heading-bg-opacity);
+  font-size: 13px;
+  text-transform: $email-section-heading-text-transform;
+}
+/* szekció fejléc betűszín */
+.text_color_dark1 {
+  color: $email-section-heading-font-color;
+}
+/* alapértelmezett betűszín minden táblázaton kívüli linknek */
+.text_normal {
+  color: $email-body-link-font-color;
+}
+/* táblázat fejléc és cím elemek */
+.bg_color_dark2 {
+  padding: 10px;
+  background-color: $email-table-label-bg-color;
+  border-bottom: $email-table-label-value-border-bottom-width solid $email-table-label-value-border-bottom-color;
+}
+.text_color_dark2 {
+  color: $email-table-label-font-color;
+}
+/* táblázat érték elemek */
+.bg_color_dark3 {
+  padding: 10px;
+  background-color: $email-table-value-bg-color;
+  border-bottom: $email-table-label-value-border-bottom-width solid $email-table-label-value-border-bottom-color;
+}
+.text_color_dark3 {
+  color: $email-table-value-font-color;
+}
