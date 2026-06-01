@@ -1,0 +1,95 @@
+{% extends "main.html" %}
+{% import common_vars.layout_urls.macro_icon_1 as icon %}
+
+{% block main_head_style_page %}
+<style>
+    @supports (mask-size: cover) {
+        .filtered-tags label::after {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('xmark',icons_style)|url_encode }}');
+        }
+        .ui-slider-handle::after {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('caret-right',icons_style)|url_encode }}');
+        }
+        .order__select-outer select {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-wide-short',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.popular {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('fire',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.discount {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('badge-percent',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.price {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.price_desc {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.unit_price {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.unit_price_desc {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.name {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-a-z',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.name_desc {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-z-a',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.time {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-five',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.time_desc {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-rotate-left',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.order_value {
+            mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('list-ol',icons_style)|url_encode }}');
+        }
+    }
+    @supports not (mask-size: cover) {
+        .filtered-tags label::after {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('xmark',icons_style)|url_encode }}');
+        }
+        .ui-slider-handle::after {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('caret-right',icons_style)|replace({'<svg ':'<svg fill="white" '})|url_encode }}');
+        }
+        .order__select-outer select {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-wide-short',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.popular {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('fire',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.discount {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('badge-percent',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.price {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.price_desc {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.unit_price {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.unit_price_desc {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.name {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-a-z',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.name_desc {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-z-a',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.time {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-five',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.time_desc {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-rotate-left',icons_style)|url_encode }}');
+        }
+        .order__select-outer select.order_value {
+            background-image: url('data:image/svg+xml;utf8,{{ icon.svg('list-ol',icons_style)|url_encode }}');
+        }
+    }
+</style>
+{% endblock %}

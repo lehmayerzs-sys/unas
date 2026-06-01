@@ -1,0 +1,411 @@
+{% extends "main.html" %}
+
+{% block main_head_style_page %}
+    {% if start_with_cat_content %}
+        {% import common_vars.layout_urls.macro_icon_1 as icon %}
+
+        <style>
+            @supports (mask-size: cover) {
+                .filtered-tags label::after {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('xmark',icons_style)|url_encode }}');
+                }
+                .ui-slider-handle::after {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('caret-right',icons_style)|url_encode }}');
+                }
+                .order__select-outer select {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-wide-short',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.popular {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('fire',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.discount {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('badge-percent',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.price {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.price_desc {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.unit_price {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.unit_price_desc {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.name {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-a-z',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.name_desc {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-z-a',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.time {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-five',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.time_desc {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-rotate-left',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.order_value {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('list-ol',icons_style)|url_encode }}');
+                }
+            }
+            @supports not (mask-size: cover) {
+                .filtered-tags label::after {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('xmark',icons_style)|url_encode }}');
+                }
+                .ui-slider-handle::after {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('caret-right',icons_style)|replace({'<svg ':'<svg fill="white" '})|url_encode }}');
+                }
+                .order__select-outer select {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-wide-short',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.popular {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('fire',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.discount {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('badge-percent',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.price {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.price_desc {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.unit_price {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-1-9',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.unit_price_desc {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-9-1',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.name {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-a-z',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.name_desc {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('arrow-down-z-a',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.time {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-five',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.time_desc {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('clock-rotate-left',icons_style)|url_encode }}');
+                }
+                .order__select-outer select.order_value {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('list-ol',icons_style)|url_encode }}');
+                }
+            }
+        </style>
+    {% endif %}
+{% endblock %}
+
+{% block global_settings %}
+    [% set global_settings %]
+    [[ box|name:login;disp:login; ]] icon--{{ icons_style }}
+    {%- if header_behavior == "1" %} header-with-sticky-behavior{% elseif header_behavior == "2" %} header-with-sticky-behavior-on-scroll-up{% endif %}
+    {%- if filter_in_subcategory %} [[ filter_cache_checking ]] js-ajax-filter-box-checking{% endif %}
+    [%- if filterExists == '1' %] filter-exists[% else %] filter-not-exists[% endif %]
+    {%- if filter_box_in_sidebar == "0" %} filter-box-offcanvas{% else %} filter-box-in-sidebar{% endif %}
+    {%- if search_bar_visible_on_mobile == "0" %} search-bar-in-offcanvas{% else %} search-bar-visible{% endif %}
+    [%- if temp_box_lang_button|replace({'\n': '', '\r': '', '\t': ''})|trim != '' or temp_box_currency_button|replace({'\n': '', '\r': '', '\t': ''})|trim != '' %] header-with-lang-or-currency[% endif %]
+    {%- if fixed_cart_behavior_on_product_details in ["0","1"] %} fixed-cart-on-artdet{% endif %}
+    {%- if carousel_container_size == "0" %} carousels-fluid{% elseif carousel_container_size == "1" %} carousels-fluid-indent{% elseif carousel_container_size == "2" %} carousels-in-container{% endif %}
+    {%- if animation_on_scroll == "1" %} aos{% endif %}
+    {%- if alt_images_carousel_max_count_on_product_list > 0 %} alt-images-on-product-list{% endif %}
+    [% endset %]
+{% endblock %}
+
+{% if animation_on_scroll == "1" %}
+    {# get default aos animation type #}
+    {% set global_aos = animation_on_scroll_type %}
+
+    {# get default aos delay #}
+    {% set global_aos_delay = animation_on_scroll_delay %}
+
+    {# get default normal duration (slow/fast) #}
+    {% set global_aos_duration_text = animation_on_scroll_duration %}
+
+    {# get default normal duration #}
+    {% set global_aos_duration = animation_on_scroll_normal_duration %}
+
+    {# get default multipliers for slow and fast duration #}
+    {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+    {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+    {% set aos_multiplier = 1 %}
+
+    {# get settings for slow duration #}
+    {% set global_slow_multiplier = animation_on_scroll_duration_slow_multiplier %}
+
+    {# get settings for fast duration #}
+    {% set global_fast_multiplier = animation_on_scroll_duration_fast_multiplier %}
+
+    {% if global_aos_duration_text == 'slow' %}
+        {% set global_aos_duration = global_aos_duration * global_slow_multiplier %}
+        {% set aos_multiplier = global_slow_multiplier %}
+    {% elseif global_aos_duration_text == 'fast' %}
+        {% set global_aos_duration = global_aos_duration * global_fast_multiplier %}
+        {% set aos_multiplier = global_fast_multiplier %}
+    {% endif %}
+
+    {# find the nearest number which is divisible by 50 (for css values) #}
+    {% set global_aos_duration = ((global_aos_duration / 50)|round) * 50 %}
+{% endif %}
+
+{% block elements %}
+    [[ element|name:start_banner_big;width:1920;layout:carousel;auto_resize:all;xxs_retina_ratio:1.8;xxs_width:388;xs_width:414;sm_width:550;sm_retina_ratio:1.8;skip_if_small:1;auto_crop:1; ]]
+    [[ element|name:start_category_offer;width:240;layout:start_categories;container_class:container;grid_class:d-flex flex-wrap g-7; ]]
+    [[ element|name:start_banner_small;width:448;layout:start_banners;container_class:container;grid_class:row gx-xl-9 gy-7;grid_col_class:col-sm-6 col-md-4; ]]
+    [[ element|name:start_banner_small_2;width:448;layout:start_banners;container_class:container;grid_class:row gx-xl-9 gy-7;grid_col_class:col-sm-6 col-md-4; ]]
+    [[ element|name:start_banner_small_3;width:448;layout:start_banners;container_class:container;grid_class:row gx-xl-9 gy-7;grid_col_class:col-sm-6 col-md-4; ]]
+    [[ element|name:start_reviews;width:306;auto_resize:all;skip_if_small:1;layout:reviews;container_class:container;grid_class:row g-5;grid_col_class:col-auto; ]]
+    [[ element|name:start_banner_1;width:672;max_width:942;lg_width:942;md_width:742;sm_width:550;xs_width:414;xxs_width:388;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;auto_resize:set;layout:banner_half_width;container_class:container;grid_class:grid main-grid;grid_col_class:g-col-12 g-col-lg-6; ]]
+    [[ element|name:start_banner_2;width:672;max_width:942;lg_width:942;md_width:742;sm_width:550;xs_width:414;xxs_width:388;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;auto_resize:set;layout:banner_half_width;container_class:container;grid_class:grid main-grid;grid_col_class:g-col-12 g-col-lg-6; ]]
+    [[ element|name:start_banner_3;width:672;max_width:942;lg_width:942;md_width:742;sm_width:550;xs_width:414;xxs_width:388;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;auto_resize:set;layout:banner_half_width;container_class:container;grid_class:grid main-grid;grid_col_class:g-col-12 g-col-lg-6; ]]
+    [[ element|name:start_brand_slider;auto_resize:all;skip_if_small:1;layout:carousel_brand; ]]
+
+    {% if animation_on_scroll == "1" %}
+    <link rel="stylesheet" href="[unas_service_url_base]/!common_packages/jquery/plugins/aos/3.0.0-beta-6/aos.css" media="print" onload="this.media='all'">
+    {% endif %}
+{% endblock %}
+
+{% block start_banner_big_is_exists %}
+    [% if start_banner_big|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %] data-has-banner-start-big="1"[% else %] data-has-banner-start-big="0"[% endif %]
+{% endblock %}
+
+{% block content %}
+<main class="main" id="main">
+    [[ content ]]
+</main>
+{% endblock %}
+
+{% block aos_attributes_footer_1 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_1.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_1.aos != '' %}
+                    {{ common_vars.footer_1.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_1.aos_delay != '' %}
+                    {{ common_vars.footer_1.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+            data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50 }}"
+            {% endif %}
+            {% if common_vars.footer_1.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_1.aos_duration }}
+            {% endif %}
+            {% if common_vars.footer_1.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_1.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_2 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_2.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_2.aos != '' %}
+                    {{ common_vars.footer_2.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_2.aos_delay != '' %}
+                    {{ common_vars.footer_2.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50 }}"
+            {% endif %}
+            {% if common_vars.footer_2.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_2.aos_duration }}
+            {% endif %}
+            {% if common_vars.footer_2.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_2.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_3 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_3.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_3.aos != '' %}
+                    {{ common_vars.footer_3.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_3.aos_delay != '' %}
+                    {{ common_vars.footer_3.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50 }}"
+            {% endif %}
+            {% if common_vars.footer_3.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_3.aos_duration }}
+            {% endif %}
+            {% if common_vars.footer_3.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_3.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_4 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_4.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_4.aos != '' %}
+                    {{ common_vars.footer_4.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_4.aos_delay != '' %}
+                    {{ common_vars.footer_4.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50 }}"
+            {% endif %}
+            {% if common_vars.footer_4.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_4.aos_duration }}
+            {% endif %}
+            {% if common_vars.footer_4.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_4.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_5 %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_5.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_5.aos != '' %}
+                    {{ common_vars.footer_5.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_5.aos_delay != '' %}
+                    {{ common_vars.footer_5.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50 }}"
+            {% endif %}
+            {% if common_vars.footer_5.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_5.aos_duration }}
+            {% endif %}
+            {% if common_vars.footer_5.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_5.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+{% block aos_attributes_footer_partners %}
+    {% if animation_on_scroll == "1" %}
+        {% if common_vars.footer_partners.aos != '0' %}
+            {% set temp_aos %}
+                {% if common_vars.footer_partners.aos != '' %}
+                    {{ common_vars.footer_partners.aos }}
+                {% else %}
+                    {{ global_aos }}
+                {% endif %}
+            {% endset %}
+            data-aos="{{ temp_aos|trim }}"
+            data-aos-anchor="#footer"
+            {% set temp_aos_delay %}
+                {% if common_vars.footer_partners.aos_delay != '' %}
+                    {{ common_vars.footer_partners.aos_delay }}
+                {% else %}
+                    {{ global_aos_delay }}
+                {% endif %}
+            {% endset %}
+
+            {% if temp_aos_delay|trim != '0' %}
+                data-aos-delay="{{ ((temp_aos_delay|trim * aos_multiplier) / 50|round) * 50 }}"
+            {% endif %}
+            {% if common_vars.footer_partners.aos_duration != '' %}
+                data-aos-duration="{{ common_vars.footer_partners.aos_duration }}
+            {% endif %}
+            {% if common_vars.footer_partners.aos_offset != '' %}
+                data-aos-offset="{{ common_vars.footer_partners.aos_offset }}
+            {% endif %}
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block body_end_script %}
+    {% if animation_on_scroll == "1" %}
+    <script src="[unas_service_url_base]/!common_packages/jquery/plugins/aos/3.0.0-beta-6/aos.js"></script>
+    <script type="text/javascript_load">
+    $(document).ready(function() {
+        AOS.init({
+            /* Global settings: */
+            disable: false, /*accepts following values: 'phone', 'tablet', 'mobile', boolean, expression or function*/
+            startEvent: 'DOMContentLoaded', /* name of the event dispatched on the document, that AOS should initialize on */
+            initClassName: 'aos-init', /* class applied after initialization */
+            animatedClassName: 'aos-animate', /* class applied on animation */
+            useClassNames: false, /* if true, will add content of `data-aos` as classes on scroll */
+            disableMutationObserver: false, /* disables automatic mutations' detections (advanced) */
+            debounceDelay: 50, /* the delay on debounce used while resizing window (advanced) */
+            throttleDelay: 99, /* the delay on throttle used while scrolling the page (advanced) */
+
+            /* Settings that can be overridden on per-element basis, by `data-aos-*` attributes: */
+            offset: {{ animation_on_scroll_offset }}, /* default: 120, offset (in px) from the original trigger point */
+            delay: {{ animation_on_scroll_delay }}, /* default: 0, values from 0 to 3000, with step 50ms */
+            duration: {{ global_aos_duration }}, /* default: 400, values from 0 to 3000, with step 50ms */
+            easing: '{{ animation_on_scroll_easing }}', /* default easing for AOS animations */
+            once: {% if animation_on_scroll_once == "0" %}true{% else %}false{% endif %}, /* whether animation should happen only once - while scrolling down */
+            mirror: {% if animation_on_scroll_mirror == "1" %}true{% else %}false{% endif %}, /* whether elements should animate out while scrolling past them */
+            anchorPlacement: 'top-bottom', /* defines which position of the element regarding to window should trigger the animation */
+        });
+
+        /* refresh AOS when img loaded */
+        document.querySelectorAll('img')
+            .forEach((img) =>
+                img.addEventListener('load', () =>
+                    AOS.refresh()
+                )
+            );
+    });
+    </script>
+    {% endif %}
+{% endblock %}

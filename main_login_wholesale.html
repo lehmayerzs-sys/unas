@@ -1,0 +1,88 @@
+{% import common_vars.layout_urls.macro_icon_1 as icon %}
+<!DOCTYPE html>
+<html lang="[unas_actual_lang]">
+<head>
+    [[ start ]]
+    [% set temp_box_lang_button %][[ box|name:lang;already:no;disp:offcanvasButton;icon_type:svg;icon_width:16;suffix:d; ]][% endset %]
+    [% set temp_box_lang_content %][[ box|name:lang;already:no;disp:offcanvasContent;icon_type:svg;icon_width:16;suffix:d; ]][% endset %]
+
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+    [[ header_font_content ]]
+
+    <script defer src="[unas_service_url_base]/!common_design/base/002600/main.min.js?ver=9"></script>
+    <script type="text/javascript_normal">
+        const OFFCANVAS_DATA = { "inited_offcanvases":[], "actual_offcanvas_levels":[] };
+    </script>
+    <style data-layout="common">
+        @supports (mask-size: cover) {
+            .btn.loader::after {
+                mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('loader',icons_style)|url_encode }}');
+            }
+            .form-select-group::after {
+                mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('chevron-down',icons_style)|url_encode }}');
+            }
+        }
+        @supports not (mask-size: cover) {
+            .btn.loader::after {
+                background-image: url('data:image/svg+xml;utf8,{{ icon.svg('loader',icons_style)|url_encode }}');
+            }
+            select {
+                background-image: url('data:image/svg+xml;utf8,{{ icon.svg('caret-down',icons_style)|url_encode }}');
+            }
+        }
+    </style>
+</head>
+
+<body class="body-wholesale" id="unas_design">
+    [[ body_start ]]
+
+    {% set template_name = 'embed_icon_sprite_1' %}
+    {% include [
+            "@actual/" ~ template_name ~ ".html",
+            "@base/002600/" ~ template_name ~ ".html",
+            "@base/002600/block/not_found.html"
+        ] with {
+            block_name: template_name
+        }
+    %}
+
+    <main class="main page-wholesale{% if page_id == 'page_shop_login' %} py-7{% else %} pt-0{% endif %}">
+        {% if page_id != 'page_shop_login' %}
+        [[ element|width:400;height:120;name:header_logo;layout:img_no_lazy;slide_max_visible_count:1;class:logo text-center mb-7 mw-100 py-7;auto_resize:set;xs_width:236;skip_if_small:1; ]]
+        {% endif %}
+        [[ content ]]
+    </main>
+
+    [[ body_end ]]
+
+    {% block offcanvases %}
+    <div id="offcanvases">
+        [% if temp_box_lang_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+        <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-lang-currency" aria-labelledby="offcanvas-lang-currency-label">
+            <div class="offcanvas-header">
+                <div class="offcanvas-title h4" id="offcanvas-lang-currency-label">{{ text.language }}</div>
+                <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ text.button_overlay_close }}">{{ icon.use('xmark') }}</button>
+            </div>
+            <div class="offcanvas-body">
+                [[ temp_box_lang_content ]]
+
+                <div class="d-grid mt-5">
+                    <button type="button" class="btn btn-primary" onclick="ajaxChangeLangAndCurrency();" aria-label="{{ text.button_modify }}">
+                        {{- text.button_modify -}}
+                        {{- icon.svg('pen-to-square',icons_style) -}}
+                    </button>
+                </div>
+            </div>
+        </div>
+        [% endif %]
+        [[ box|name:remind;ajax:1; ]]
+    </div>
+    {% endblock %}
+
+    <button id="scroll-to-top-btn" class="back_to_top btn btn-primary btn-square{% if back_to_top_on_mobile == "0" %} hide-on-mobile{% endif %}" type="button" aria-label="{{ text.back_to_top }}">
+        {{- icon.svg('arrow-up',icons_style) -}}
+    </button>
+</body>
+[[ end ]]
+</html>

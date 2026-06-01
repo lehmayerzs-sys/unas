@@ -1,0 +1,675 @@
+{% import common_vars.layout_urls.macro_icon_1 as icon %}
+<!DOCTYPE html>
+    {% if page_id in [ 'page_shop_cart', 'page_shop_order_mods', 'page_shop_order_control' ] %}
+        {% set in_order_flow = true %}
+    {% else %}
+        {% set in_order_flow = false %}
+    {% endif %}
+
+    {% if "page_shop_cat_" in page_id or "page_shop_artdet_" in page_id or "page_shop_art_" in page_id or "page_shop_artspec_" in page_id or "page_shop_search" in page_id %}
+        {% set on_product_page = true %}
+    {% else %}
+        {% set on_product_page = false %}
+    {% endif %}
+
+    [% set temp_box_newsletter %]
+    [[ box|name:newsletter;type:link; ]]
+    [% endset %]
+
+    [% set temp_box_cart %]
+    [[ box|name:cart;disp:counter; ]]
+    [% endset %]
+
+    [% set temp_box_lang_button %][[ box|name:lang;already:no;disp:offcanvasButton;icon_type:svg;icon_width:16;suffix:d; ]][% endset %]
+    [% set temp_box_lang_content %][[ box|name:lang;already:no;disp:offcanvasContent;icon_type:svg;icon_width:16;suffix:d; ]][% endset %]
+
+    [% set temp_box_currency_button %][[ box|name:currency;form_suffix:2;disp:offcanvasButton;suffix:d; ]][% endset %]
+    [% set temp_box_currency_content %][[ box|name:currency;form_suffix:2;disp:offcanvasContent;suffix:d; ]][% endset %]
+
+    [% set temp_box_cat %][[ box|name:cat;layout_cache:1;expand_cache:1;expand_cache_name:default;layout_level0:0;layout:1;ajax:1;ajax_level0:1; ]][% endset %]
+
+    [% set temp_box_menu %]
+    [[ menu|max_level:4;layout:0; ]]
+    [% endset %]
+
+    [% set temp_box_filter %]
+    [[ box|name:filter;disp:desktop; ]]
+    [% endset %]
+
+    [% set temp_filter_button %]
+    [[ box|name:filter;disp:button;prefix:desktop_; ]]
+    [% endset %]
+
+    {# megvizsgáljuk, hogy a szűrés boxnak, van-e tartalma #}
+    [% if temp_box_filter|replace({'\n': '', '\r': '', '\t': ''})|trim == '' %]
+    [% set box_filter_exists = false %] {# üres, tehát az adott oldalon NINCS szűrés box #}
+    [% else %]
+    [% set box_filter_exists = true %] {# nem üres, feltételezzük, hogy LESZ tartalma #}
+    [% if filter_in_subcategory and 'filter-cache-not-exists' in filter_cache_checking %]
+    [% set box_filter_exists = false %] {# ha olyan oldalon vagyunk, ahol lehet köztes szűrés, ÉS a cache nem létezik, akkor feltételezzük, hogy NEM lESZ szűrés box #}
+    [% endif %]
+    [% endif %]
+
+    [% set temp_box_compare_sticky %]
+    [[ box|name:compare;img:1;img_width:60;img_height:60;disp:sticky;ajax:yes; ]]
+    [% endset %]
+
+    [% set temp_box_partner %]
+    [[ box|name:partner;disp:content; ]]
+    [% endset %]
+
+    [% set temp_box_checkout %]
+    [[ box|name:checkout;disp:content; ]]
+    [% endset %]
+
+    [% set temp_box_cert %]
+    [[ box|name:cert ]]
+    [% endset %]
+
+    {% block global_settings %}
+    [% set global_settings %]
+        [[ box|name:login;disp:login; ]] icon--{{ icons_style }} js-ajax-product-list-checking
+        {%- if filter_in_subcategory %} {{ filter_in_subcategory_enabled_class }} [[ filter_cache_checking ]] js-ajax-filter-box-checking{% endif %}
+        [%- if filterExists == '1' %] filter-exists[% else %] filter-not-exists[% endif %]
+        {%- if filter_box_in_sidebar == "0" %} filter-box-offcanvas{% else %} filter-box-in-sidebar{% endif %}
+        {%- if filter_box_hide_inactive_parameter == "1" %} filter-box-hide-inactive-parameter{% endif %}
+        {%- if filter_box_hide_inactive_parameter_group == "1" %} filter-box-hide-inactive-parameter-group{% endif %}
+        {%- if filter_box_hide_active_parameter_label_title == "1" %} filter-box-hide-active-parameter-label-title{% endif %}
+        {%- if filter_box_advance_the_selected_parameter_in_order == "1" %} filter-box-advance-the-selected-parameter-in-order{% endif %}
+        {%- if filter_box_advance_the_active_parameter_in_order == "1" %} filter-box-advance-the-active-parameter-in-order{% endif %}
+        {%- if filter_box_more_and_less_button == "1" %} filter-box-more-and-less-button{% endif %}
+        {%- if search_bar_visible_on_mobile == "0" %} search-bar-in-offcanvas{% else %} search-bar-visible{% endif %}
+        [%- if temp_box_lang_button|replace({'\n': '', '\r': '', '\t': ''})|trim != '' or temp_box_currency_button|replace({'\n': '', '\r': '', '\t': ''})|trim != '' %] header-with-lang-or-currency[% endif %]
+        {%- if in_order_flow %} in-order-flow{% else %}{%- if header_behavior == "1" %} header-with-sticky-behavior{% elseif header_behavior == "2" %} header-with-sticky-behavior-on-scroll-up{% endif %}{% endif %}
+        {%- if fixed_cart_behavior_on_product_details in ["0","1"] %} fixed-cart-on-artdet{% endif %}
+        {%- if carousel_container_size == "0" %} carousels-fluid{% elseif carousel_container_size == "1" %} carousels-fluid-indent{% elseif carousel_container_size == "2" %} carousels-in-container{% endif %}
+        {%- if on_product_page %} on-product-page{% endif %}
+        {%- if alt_images_carousel_max_count_on_product_list > 0 %} alt-images-on-product-list{% endif %}
+    [% endset %]
+    {% endblock %}
+<html class="[[ page_id ]][[ layout_plus_maincat_id ? ' main-cat-' ~ layout_plus_maincat_id ]][[ layout_plus_mainpage_id ? ' main-page-' ~ layout_plus_mainpage_id ]] [[ global_settings|replace({'\n': '', '\r': '', '\t': ''})|trim ]]"{% block bs_theme %} data-bs-theme="light"{% endblock %}>
+    <head>
+        [[ start ]]
+        <meta content="width=device-width, initial-scale=1.0" name="viewport">
+
+        [[ header_font_content ]]
+
+        <script type="text/javascript_normal">
+            const OFFCANVAS_DATA = { "inited_offcanvases":[], "actual_offcanvas_levels":[] };
+            const EVENT_DATA = {
+                tippy_state: 'not_loaded'
+                {%- if toast_notification_when_product_added_to_cart and page_id != 'page_shop_cart' %}, toastr_state: 'not_loaded'{% endif %}
+            };
+            function addStyle(styleString,layout) {
+                const style = document.createElement('style');
+                style.textContent = styleString;
+                style.setAttribute('data-layout',layout);
+                document.head.append(style);
+            }
+        </script>
+
+        <script defer src="[unas_service_url_base]/!common_design/base/002600/main.min.js?ver=10"></script>
+        {% if header_menu_click == '1' %}
+        <script defer src="[unas_service_url_base]/!common_packages/jquery/plugins/hoverintent/hoverintent.js"></script>
+        {% endif %}
+
+        [[ element|name:header_text_section_1;layout:html_closeable;display:none; ]]
+        [[ element|name:header_text_section_2;layout:html_only;display:none; ]]
+        [[ element|name:header_logo;width:400;height:120;layout:img_no_lazy;display:none; ]]
+        {% block elements %}
+        [[ element|name:start_banner_big;width:1920;size_type:maximal;lg_width:942;md_width:742;sm_width:550;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;layout:carousel;text_max:5;customizable:big-banner;display:none;auto_crop:1; ]]
+        [[ element|name:start_banner_small;width:448;size_type:maximal;layout:start_banners;customizable:small-banner;delay:0;display:none; ]]
+        [[ element|name:start_category_offer;width:240;layout:start_categories;text_max:1;customizable:start-category-offer;delay:0;display:none; ]]
+        [[ element|name:start_banner_small_2;width:448;size_type:maximal;layout:start_banners;customizable:small-banner-2;delay:0;display:none; ]]
+        [[ element|name:start_reviews;width:306;def_width:80;layout:reviews;text_max:1;customizable:start-reviews;delay:0;display:none; ]]
+        [[ element|name:start_artref_elements;width:1920;lg_width:992;md_width:768;sm_width:576;size_type:maximal;slide_max_visible_count:1;layout:title_box_with_bg;customizable:start-product-offer;display:none;auto_crop:1; ]]
+        [[ element|name:start_banner_1;width:672;max_width:942;lg_width:942;md_width:742;sm_width:550;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;layout:banner_half_width;customizable:start-banner-1;display:none; ]]
+        [[ element|name:start_banner_2;width:672;max_width:942;lg_width:942;md_width:742;sm_width:550;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;layout:banner_half_width;customizable:start-banner-2;display:none; ]]
+        [[ element|name:start_top_products_box_elements;width:1920;lg_width:992;md_width:768;sm_width:576;size_type:maximal;slide_max_visible_count:1;layout:title_box_with_bg;customizable:top-products-box;display:none;auto_crop:1; ]]
+        [[ element|name:start_ref_products_box_elements;width:1920;lg_width:992;md_width:768;sm_width:576;size_type:maximal;slide_max_visible_count:1;layout:title_box_with_bg;customizable:ref-products-box;display:none;auto_crop:1; ]]
+        [[ element|name:start_banner_3;width:672;max_width:942;lg_width:942;md_width:742;sm_width:550;sm_retina_ratio:1.8;xxs_retina_ratio:1.8;layout:banner_half_width;customizable:start-banner-3;display:none; ]]
+        [[ element|name:start_blog_title_box;width:1920;lg_width:992;md_width:768;sm_width:576;size_type:maximal;layout:title_box_with_bg;slide_max_visible_count:1;display:none;auto_crop:1; ]]
+        [[ element|name:start_blog_footer;layout:title_box;display:none; ]]
+        [[ element|name:start_brand_slider;layout:carousel_brand;customizable:start-brand-slider;display:none; ]]
+        [[ element|name:start_banner_small_3;width:448;size_type:maximal;layout:start_banners;customizable:small-banner-3;delay:0;display:none; ]]
+        [[ element|name:details_similar_products_elements;layout:layout:title_box_with_bg;display:none;auto_crop:1; ]]
+        [[ element|name:details_additional_products_elements;layout:layout:title_box_with_bg;display:none;auto_crop:1; ]]
+        [[ element|name:details_banner_1;layout:details_banner;display:none; ]]
+        [[ element|name:details_banner_2;layout:details_banner;display:none; ]]
+        {% endblock %}
+        [[ element|name:cart_summary;layout:html;class:cart_summary_element mt-4 w-100;display:none; ]]
+        [[ element|name:contact_page_map;layout:html;display:none; ]]
+        [[ element|name:newsletter_text;layout:title_box_with_bg;customizable:start-newsletter;class:mb-8 text-center;display:none; ]]
+
+        {% block main_head_style_common %}
+        <style data-layout="common">
+            @supports (mask-size: cover) {
+                .form-select-group::after {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('chevron-down',icons_style)|url_encode }}');
+                }
+                input[type="search"]::-webkit-search-cancel-button {
+                    mask-image: url("data:image/svg+xml;utf8,{{ icon.svg('xmark',icons_style)|url_encode }}");
+                }
+                .qtyminus_common::before {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('minus',icons_style)|url_encode }}');
+                }
+                .qtyplus_common::before {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('plus',icons_style)|url_encode }}');
+                }
+                .header_text_section_2 a[href^='mailto:']::before {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('envelope',icons_style)|url_encode }}');
+                }
+                .header_text_section_2 a[href^='tel:']::before {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('phone',icons_style)|url_encode }}');
+                }
+                .btn.loader::after {
+                    mask-image: url('data:image/svg+xml;utf8,{{ icon.svg('loader',icons_style)|url_encode }}');
+                }
+            }
+            @supports not (mask-size: cover) {
+                .qtyminus_common {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('minus',icons_style)|url_encode }}');
+                }
+                .qtyplus_common {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('plus',icons_style)|url_encode }}');
+                }
+                select {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('caret-down',icons_style)|url_encode }}');
+                }
+                input[type="search"]::-webkit-search-cancel-button {
+                    background-image: url("data:image/svg+xml;utf8,{{ icon.svg('xmark',icons_style)|url_encode }}");
+                }
+                .header_text_section_2 a[href^='mailto:'] {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('envelope',icons_style)|url_encode }}');
+                }
+                .header_text_section_2 a[href^='tel:'] {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('phone',icons_style)|url_encode }}');
+                }
+                .btn.loader::after {
+                    background-image: url('data:image/svg+xml;utf8,{{ icon.svg('loader',icons_style)|url_encode }}');
+                }
+            }
+        </style>
+        {% endblock %}
+        {% block main_head_style_page %}{% endblock %}
+    </head>
+    <body id="unas_design"{% block start_banner_big_is_exists %}{% endblock %}>
+        [[ body_start ]]
+
+        {% if alt_images_carousel_max_count_on_product_list > 0 %}
+        <div id="cursor">{% include ["@icons/mouse-scroll.svg", "@icons/notdef.svg"] %}</div>
+        {% endif %}
+
+        {% set template_name = 'embed_icon_sprite_1' %}
+        {% include [
+                "@actual/" ~ template_name ~ ".html",
+                "@base/002600/" ~ template_name ~ ".html",
+                "@base/002600/block/not_found.html"
+            ] with {
+                block_name: template_name
+            }
+        %}
+
+        {% block header %}
+            {% set template_name = 'embed_header_1' %}
+            {% include [
+                    "@actual/" ~ template_name ~ ".html",
+                    "@base/002600/" ~ template_name ~ ".html",
+                    "@base/002600/block/not_found.html"
+                ] with {
+                    block_name: template_name
+                }
+            %}
+        {% endblock %}
+
+        {% if filter_button_position_with_three_settings == "0" %}
+            [[ temp_filter_button ]]
+        {% endif %}
+
+        {% block content %}
+        <main class="main" id="main">
+            {% block breadcrumb %}[[ breadcrumb ]]{% endblock %}
+
+            [% set temp_title %][[ title ]][% endset %]
+
+            {# filter button after main title #}
+            [% if filter_button_position_with_three_settings == "1" and temp_title|replace({"\n": "", "\r": "", "\t": ""})|trim != "" and ("page_shop_cat_" in page_id or "page_shop_art_" in page_id or "page_shop_artspec_" in page_id or "page_shop_search" in page_id) %]
+            <div class="main__title">
+                <div class="container">
+                    <div class="main-title__wrap">[[ title ]] [[ temp_filter_button ]]</div>
+                </div>
+            </div>
+            [% else %]
+                [[ title ]]
+            [% endif %]
+
+            [[ content ]]
+            {% if on_product_page %}[[ box|name:product_last;product_list_layout:last_1;prefix_key:last;ajax_nodesign_element_render:1; ]]{% endif %}
+        </main>
+        {% endblock %}
+
+        [% set temp_social %]
+        [[ element|name:social_icons;layout:social_icons;customizable:social-icons;icons_style:brands; ]]
+        [% endset %]
+
+        [% set temp_provider %]
+        [[ provider|logo:svg; ]]
+        [% endset %]
+
+        [% set temp_partner_element %]
+        [[ element|name:partner_element;layout:partners;customizable:partners;auto_resize:all;skip_if_small:1; ]]
+        [% endset %]
+
+        [% set temp_footer_menus = [] %]
+
+        [% set temp_footer_menus_before_menu_5 = 0 %]
+
+        [% set temp_footer_v2_menu_1 %][[ element|name:footer_v2_menu_1;layout:html_listing;class:footer__nav footer__nav-1 {{ simple_footer ? 'col footer--simple' : 'col-xs-6 col-lg' }};attr:{% block aos_attributes_footer_1 %}{% endblock %};class_header:footer__header microcaps;customizable:footer;{{ simple_footer ? 'without_header:true;' }} ]][% endset %]
+        [% set temp_footer_v2_menu_2 %][[ element|name:footer_v2_menu_2;layout:html_listing;class:footer__nav footer__nav-2 col-xs-6 col-lg;attr:{% block aos_attributes_footer_2 %}{% endblock %};class_header:footer__header microcaps;customizable:footer; ]][% endset %]
+        [% set temp_footer_v2_menu_3 %][[ element|name:footer_v2_menu_3;layout:html_listing;class:footer__nav footer__nav-3 col-xs-6 col-lg;attr:{% block aos_attributes_footer_3 %}{% endblock %};class_header:footer__header microcaps;customizable:footer; ]][% endset %]
+        [% set temp_footer_v2_menu_4 %][[ element|name:footer_v2_menu_4;layout:html_listing;class:footer__nav footer__nav-4 col-xs-6 col-lg;attr:{% block aos_attributes_footer_4 %}{% endblock %};class_header:footer__header microcaps;customizable:footer; ]][% endset %]
+
+        [% if temp_footer_v2_menu_1|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            [% set temp_footer_menus = temp_footer_menus|merge(['footer_menu_1']) %]
+        [% endif %]
+        [% if temp_footer_v2_menu_2|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            [% set temp_footer_menus = temp_footer_menus|merge(['footer_menu_2']) %]
+        [% endif %]
+        [% if temp_footer_v2_menu_3|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            [% set temp_footer_menus = temp_footer_menus|merge(['footer_menu_3']) %]
+        [% endif %]
+        [% if temp_footer_v2_menu_4|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            [% set temp_footer_menus = temp_footer_menus|merge(['footer_menu_4']) %]
+        [% endif %]
+
+        [% set temp_footer_menus_before_menu_5 = temp_footer_menus|length %]
+
+        [% set temp_footer_v2_menu_5 %][[ element|name:footer_v2_menu_5;layout:html_listing;class:d-flex flex-column gy-7;class_header:footer__header h6;customizable:footer; ]][% endset %]
+
+        [% if temp_footer_v2_menu_5|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            [% set temp_footer_menus = temp_footer_menus|merge(['footer_menu_5']) %]
+        [% endif %]
+
+        {% block footer %}
+        <footer id="footer" class='footer footer--v2[% if temp_provider|replace({"\n": "", "\r": "", "\t": ""})|trim == "" and
+            temp_partner_element|replace({"\n": "", "\r": "", "\t": ""})|trim == "" and
+            temp_box_partner|replace({"\n": "", "\r": "", "\t": ""})|trim == "" and
+            temp_box_checkout|replace({"\n": "", "\r": "", "\t": ""})|trim == "" and
+            temp_box_cert|replace({"\n": "", "\r": "", "\t": ""})|trim == ""
+            %] no-partners[% endif %] footer-menu-count--[[ temp_footer_menus|length ]]'
+        >
+            <div class="container px-8 px-xl-7">
+                <div class="row gy-9 gx-8">
+                    {% if simple_footer %}
+                    [% if 'footer_menu_1' in temp_footer_menus %]
+                        [[ temp_footer_v2_menu_1 ]]
+                    [% endif %]
+                    {% else %}
+                    [% if 'footer_menu_1' in temp_footer_menus %]
+                        [[ temp_footer_v2_menu_1 ]]
+                    [% endif %]
+                    [% if 'footer_menu_2' in temp_footer_menus %]
+                        [[ temp_footer_v2_menu_2 ]]
+                    [% endif %]
+                    [% if 'footer_menu_3' in temp_footer_menus %]
+                        [[ temp_footer_v2_menu_3 ]]
+                    [% endif %]
+                    [% if 'footer_menu_4' in temp_footer_menus %]
+                        [[ temp_footer_v2_menu_4 ]]
+                    [% endif %]
+                    [% if 'footer_menu_5' in temp_footer_menus or temp_social|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                    <div class="footer__nav footer__nav-5 align-items-center text-center[% if temp_footer_menus_before_menu_5 in ['1','3'] %] col-sm align-items-sm-end text-sm-end[% if temp_footer_menus_before_menu_5 in ['3'] %] col-md-12 col-lg-4 align-items-md-center text-md-center align-items-lg-end text-lg-end[% endif %][% endif %][% if temp_footer_menus_before_menu_5 in ['2'] %] col-md-5 align-items-md-end text-md-end[% endif %][% if temp_footer_menus_before_menu_5 in ['4'] %] col-xl-3 col-xxl-4 align-items-xl-end text-xl-end[% endif %]"{% block aos_attributes_footer_5 %}{% endblock %}>
+                        <div class="footer__nav-inner d-flex flex-column gy-7">
+                        [% if 'footer_menu_5' in temp_footer_menus %]
+                            [[ temp_footer_v2_menu_5 ]]
+                        [% endif %]
+                        [% if temp_social|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            [[ temp_social ]]
+                        [% endif %]
+                        </div>
+                    </div>
+                    [% endif %]
+                    {% endif %}
+                </div>
+            </div>
+        </footer>
+        {% endblock %}
+
+        {% block partners %}
+        [% if temp_provider|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or
+            temp_partner_element|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or
+            temp_box_partner|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or
+            temp_box_checkout|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or
+            temp_box_cert|replace({"\n": "", "\r": "", "\t": ""})|trim != ""
+        %]
+        <div id="provider-partners" role="region" aria-label="{{ text.design.boxtitle_partner }}">
+            <div class="container d-flex flex-column gap-7 align-items-center justify-content-center flex-md-row"{% block aos_attributes_footer_partners %}{% endblock %}>
+                    [% if temp_partner_element|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_partner|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_checkout|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_cert|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                    <div id="partners" class='partners d-inline-flex flex-wrap gap-4 align-items-center justify-content-center
+                        [%- if temp_provider|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %] justify-content-md-end[% endif %]'
+                         style='[[ box|name:checkout;disp:backvars; ]][[ box|name:partner;disp:backvars; ]]'
+                    >
+                        [[ temp_partner_element ]]
+                        [[ temp_box_partner ]]
+                        [[ temp_box_checkout ]]
+                        [[ temp_box_cert ]]
+                    </div>
+                    [% endif %]
+
+                [% if temp_provider|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                [[ temp_provider ]]
+                [% endif %]
+            </div>
+        </div>
+        [% endif %]
+        {% endblock %}
+
+        {% block offcanvases %}
+        <div id="offcanvases">
+            [% if temp_box_lang_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_currency_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-lang-currency" aria-labelledby="offcanvas-lang-currency-label">
+                <div class="offcanvas-header">
+                    <div class="offcanvas-title h4" id="offcanvas-lang-currency-label">
+                        [%- if temp_box_lang_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" and temp_box_currency_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                        {{- text.language_and_currency -}}
+                        [% else %]
+                            [% if temp_box_lang_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            {{- text.language -}}
+                            [% elseif temp_box_currency_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                            {{- text.currency -}}
+                            [% endif %]
+                        [% endif -%]
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ text.button_overlay_close }}">{{ icon.use('xmark') }}</button>
+                </div>
+                <div class="offcanvas-body">
+                    [% if temp_box_lang_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %][[ temp_box_lang_content ]][% endif %]
+                    [% if temp_box_lang_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" and temp_box_currency_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                    <div class="line-separator"></div>
+                    [% endif %]
+                    [% if temp_box_currency_content|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %][[ temp_box_currency_content ]][% endif %]
+
+                    <div class="d-grid mt-5">
+                        <button type="button" class="btn btn-primary" onclick="this.classList.add('loader');ajaxChangeLangAndCurrency();" aria-label="{{ text.button_modify }}">{{ text.button_modify }}{{ icon.svg('pen-to-square',icons_style) }}</button>
+                    </div>
+                </div>
+            </div>
+            [% endif %]
+            [[ box|name:login;disp:content; ]]
+            [[ box|name:remind;ajax:1; ]]
+            <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvas-box-cart" aria-labelledby="offcanvas-box-cart-label">
+                <div class="offcanvas-header">
+                    <div class="offcanvas-title h4" id="offcanvas-box-cart-label">{{ text.cart }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="{{ text.button_overlay_close }}">{{ icon.use('xmark') }}</button>
+                    {% if page_id not in ['page_shop_cart'] %}
+                    <a class="box-cart__jump-to-cart-page-btn icon-link ms-auto" href="[unas_shop_url]/shop_cart.php">{{ text.go_to_cart }}{{- icon.use('caret-right') -}}</a>
+                    {% endif %}
+                </div>
+                <div class="offcanvas-body p-0" id="box_cart_content2" aria-live="polite">
+                    <div class="spinner-overlay">
+                        <div class="spinner-fa m-5" role="status">
+                            {{ icon.svg('loader',icons_style) }}
+                            <span class="visually-hidden">{{ text.loading }}</span>
+                        </div>
+                    </div>
+                    <script>
+                        $(document).ready(function() {
+                            $('.offcanvas-box-cart-open-btn').on("click", function(){
+                                let $this_btn = $(this);
+                                const $box_cart_2 = $("#box_cart_content2");
+
+                                if (!$this_btn.hasClass('ajax-loading') && !$this_btn.hasClass('is-loaded')) {
+                                    $.ajax({
+                                        type: "GET",
+                                        async: true,
+                                        url: "[unas_service_url_base]/shop_ajax/ajax_box_cart.php?get_ajax=1&lang_master=[[ language ]]&cart_num=2",
+                                        beforeSend:function(){
+                                            $this_btn.addClass('ajax-loading');
+                                            $box_cart_2.addClass('ajax-loading');
+                                        },
+                                        success: function (data) {
+                                            $box_cart_2.html(data).removeClass('ajax-loading').addClass("is-loaded");
+                                            $this_btn.removeClass('ajax-loading').addClass("is-loaded");
+                                        }
+                                    });
+                                }
+                            });
+                        });
+                    </script>
+                    [[ box|name:cart;price_format:cart;img:1;only_ajax:1; ]]
+                </div>
+            </div>
+            [% if temp_box_cat|replace({"\n": "", "\r": "", "\t": ""})|trim != "" or temp_box_menu|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+            <div class="offcanvas offcanvas-start offcanvas--box-cat offcanvas--box-cat-0{% if plus_menus_placed_first %} plus-menus-placed-first{% endif %}" data-bs-scroll="false" data-bs-keyboard="false" data-bs-backdrop="static" tabindex="-1" id="offcanvas-box-cat-0" aria-labelledby="offcanvas-box-cat-0-label">
+                [% if temp_box_cat|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                <div class="offcanvas-header" id="offcanvas-header-box-cat-0">
+                    <div class="offcanvas-title h4" id="offcanvas-box-cat-0-label">{{ text.categories }}</div>
+                    <button type="button" class="btn-close" data-bs-dismiss="offcanvas" data-bs-target="#offcanvas-box-cat-0" aria-label="{{ text.button_overlay_close }}">{{ icon.use('xmark') }}</button>
+                </div>
+                <div class="offcanvas-body" id="offcanvas-body-box-cat-0"></div>
+                [% endif %]
+                [% if temp_box_menu|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+                <div class="offcanvas-header{% if hide_plus_menus_in_offcanvas_while_visible_in_header and header_cat_and_plus_menu_position == '0' %} d-lg-none{% endif %}" id="offcanvas-header-box-menu">
+                    <div class="offcanvas-title h4" id="offcanvas-box-menu-label">{{ text.menu_items }}</div>
+                </div>
+                <div class="offcanvas-body{% if hide_plus_menus_in_offcanvas_while_visible_in_header and header_cat_and_plus_menu_position == '0' %} d-lg-none{% endif %}" id="offcanvas-body-box-menu">
+                    <nav>
+                        <ul class="navbar-nav justify-content-start flex-wrap align-items-stretch me-auto with-click" aria-labelledby="offcanvas-box-menu-label">
+                        [[- temp_box_menu -]]
+                        </ul>
+                    </nav>
+                </div>
+                [% endif %]
+            </div>
+            [% endif %]
+            <script>
+                function spinner_overlay(el) {
+                    const $this = $(el);
+                    const $this_content = $this.closest('.offcanvas');
+                    const $this_spinner = $this_content.find('.spinner-overlay');
+                    $this_spinner.removeClass('d-none');
+                }
+            </script>
+            {% if filter_box_in_sidebar == "0" %}[[ temp_box_filter ]]{% endif %}
+        </div>
+        {% endblock %}
+
+        <button id="scroll-to-top-btn" class="back_to_top btn btn-primary btn-square{% if back_to_top_on_mobile == "0" %} hide-on-mobile{% endif %}" type="button" aria-label="{{ text.back_to_top }}">
+            {{- icon.svg('arrow-up',icons_style) -}}
+        </button>
+
+        [% if temp_box_compare_sticky|replace({"\n": "", "\r": "", "\t": ""})|trim != "" %]
+        {% if on_product_page or page_id == 'page_shop_start' %}
+        <div id="box_compare_content" class="text-center fixed-bottom">
+            [[ temp_box_compare_sticky ]]
+            <script>
+                function checkCompareItems() {
+                    let $compare_item_num_el = $('.js-box-compare-item-num');
+                    $('.box-compare__dropdown-btn-item-num').html($compare_item_num_el.attr('data-count'));
+                }
+                $(document).on('compareBoxRefreshed', function () {
+                    checkCompareItems();
+                });
+            </script>
+        </div>
+        {% endif %}
+        [% endif %]
+
+        [[ body_end ]]
+
+        <div class="scripts-content">
+            {% set template_name = 'embed_offcanvas_script_1' %}
+            {% include [
+                    "@actual/" ~ template_name ~ ".html",
+                    "@base/002600/" ~ template_name ~ ".html",
+                    "@base/002600/block/not_found.html"
+                ] with {
+                    block_name:         template_name
+                }
+            %}
+            <script>
+                function passwordShowHide() {
+                    $("input[type=password]:not(.inited)").each(function(){
+                        let this_input = this;
+                        let $this_input = $(this_input);
+                        let $this_parent = $this_input.parent('.input-group');
+                        let button_classes = $this_parent ? 'btn btn-clear btn-in-group' : 'btn btn-text show';
+                        let disabled_attribute = $this_input.val() ? ' ' : ' disabled';
+
+                        const eye_icon = '{{ icon.svg('eye',icons_style,'pw-eye') }}';
+                        const eye_slash_icon = '{{ icon.svg('eye-slash',icons_style,'pw-eye-slash') }}';
+                        let button = '<button' + disabled_attribute + ' class="show-hide-password-btn ' + button_classes + '" type="button" data-text-show="{{ text.show_password }}" data-text-hide="{{ text.hide_password }}" aria-label="{{ text.show_password }}">' + eye_icon + eye_slash_icon + '</button>';
+                        const button_wrapper = $this_parent ? $('<span class="input-group-text p-0">' + button + '</span>') : $(button);
+
+                        button_wrapper.insertAfter($this_input);
+
+                        $this_input.addClass('inited');
+                        const $this_button = $this_input.parent().find('.show-hide-password-btn');
+
+                        $this_button.on('click', function(){
+                            if (this_input.type === "password") {
+                                this_input.type = "text";
+                                $this_input.addClass('pw');
+                                $this_button.addClass('hide').removeClass('show').attr('aria-label',$this_button.attr('data-text-hide'));
+                            } else {
+                                this_input.type = "password";
+                                $this_button.addClass('show').removeClass('hide').attr('aria-label',$this_button.attr('data-text-show'));
+                            }
+                        });
+                        $this_input.on('blur change keyup paste', function() {
+                            let $this_val = $this_input.val();
+                            $this_input.toggleClass("not-empty", $this_val.length >= 1);
+                            $this_button[0].toggleAttribute("disabled", $this_val.length == 0);
+                        });
+                    });
+                }
+
+                {% set use_toastr = toast_notification_when_product_added_to_cart and page_id != 'page_shop_cart' %}
+
+                function announceAddToCart(data) {
+                    if (data['qty'] > data['qty_add']) {
+                        let text = UNAS.text.product_added_to_cart_with_qty_problem
+                        text = text.replace("[qty_added_to_cart]", "<span class='toast-qty'>" + data['qty_add']);
+                        text = text.replace("[qty_unit]", data['unit'] + "</span>");
+
+                        announceToScreenReader?.('addToCartSuccessWithQtyError',{
+                            'message':text,
+                            'qty_of_items': data.qty_of_items
+                        });
+
+                        {% if use_toastr %}
+                        if (config_plus['cart_redirect'] == 1) {
+                            const icon_warning = '{{ icon.svg('triangle-exclamation',icons_style) }}';
+                            text = $.parseHTML(icon_warning + text);
+                            toastr.warning(text);
+                        }
+                        {% endif %}
+                    } else {
+                        {# ha NEM csomagtermék VAGY csomagtermék ÉS az utolsó termék került a kosárba, csak akkor olvassunk fel #}
+                        if (data.package_offer !== null && data.is_last_package_offer_item === false) return;
+
+                        announceToScreenReader?.('addToCartSuccess',{
+                            'qty_of_items': data.qty_of_items
+                        });
+                        {% if use_toastr %}
+                        if (config_plus['cart_redirect'] == 1) {
+                            const icon_check = '{{ icon.svg('check',icons_style) }}';
+                            toastr.success(icon_check + UNAS.text.product_added_to_cart);
+                        }
+                        {% endif %}
+                    }
+                }
+                {% if use_toastr %}
+                async function loadCSS(url) {
+                    return new Promise((resolve, reject) => {
+                        const link = document.createElement("link");
+                        link.rel = "stylesheet";
+                        link.href = url;
+                        link.onload = () => resolve(`CSS betöltve: ${url}`);
+                        link.onerror = () => reject(new Error(`Nem sikerült betölteni: ${url}`));
+                        document.head.appendChild(link);
+                    });
+                }
+                {% endif %}
+
+                window.addEventListener("DOMContentLoaded", function() {
+                    passwordShowHide();
+
+                    if ( service_type == 'shop' ) {
+                        $(document).on('addToCartSuccess', async function (e,data) {
+                            {% if use_toastr %}
+                            if (EVENT_DATA.toastr_state === "not_loaded") {
+
+                                EVENT_DATA.toastr_state = 'loading';
+                                try {
+                                    console.log('Loading ToastR JS...');
+                                    await import("[unas_service_url_base]/!common_packages/jquery/plugins/toastr/toastr.min.js");
+                                    await loadCSS("[unas_service_url_base]/!common_packages/jquery/plugins/toastr/toastr.min.css");
+
+                                    if (typeof toastr !== 'undefined') {
+                                        EVENT_DATA.toastr_state = 'loaded';
+
+                                        toastr.options = {
+                                            "positionClass": 'toast-top-center',
+                                            "closeButton": true,
+                                            "closeHtml": '{{ icon.use('xmark') }}',
+                                            "progressBar": true,
+                                            "timeOut": "1500",
+                                            "hideDuration": "300",
+                                            onShown: function () {
+                                                this.setAttribute('role', 'alert');
+                                            }
+                                        }
+                                        announceAddToCart(data);
+                                    } else {
+                                        throw new Error('ToastR did not load correctly');
+                                    }
+                                } catch (err) {
+                                    console.error("Error loading modules: ", err);
+                                    /* Allow retrying in case of failure */
+                                    EVENT_DATA.toastr_state = 'not_loaded';
+                                }
+                            } else if (EVENT_DATA.toastr_state === "loaded") {
+                                announceAddToCart(data);
+                            }
+                            {% else %}
+                            announceAddToCart(data);
+                            {% endif %}
+                        });
+
+                        $(document).on('removeFromCart removeFromCartBulk', function (e,data) {
+                            {# ha a removeFromCart esemény Bulk-os, akkor nem csinálunk semmit, mert csak a removeFromCartBulk kell ilyenkor #}
+                            if (data?.is_bulk) return;
+                            announceToScreenReader?.('removeFromCart',{'qty_of_items': data.qty_of_items});
+                            {% if page_id == 'page_shop_cart' %}
+                            if (data.triggered_by === 'cart_box') window.checkCartContent?.();
+                            {% endif %}
+                        });
+                    }
+                });
+            </script>
+            {% block body_end_script %}{% endblock %}
+
+            {% set template_name = 'embed_scroll_snap_js' %}
+            {% include [
+                "@actual/" ~ template_name ~ ".html",
+                "@base/002600/" ~ template_name ~ ".html",
+                "@base/002600/block/not_found.html"
+            ] with {
+                block_name:         template_name
+            }
+            %}
+        </div>
+
+        {% set template_name = 'embed_cat_and_plus_menu_script_1' %}
+        {% include [
+                "@actual/" ~ template_name ~ ".html",
+                "@base/002600/" ~ template_name ~ ".html",
+                "@base/002600/block/not_found.html"
+            ] with {
+                block_name:         template_name
+            }
+        %}
+    </body>
+    [[ end ]]
+</html>
